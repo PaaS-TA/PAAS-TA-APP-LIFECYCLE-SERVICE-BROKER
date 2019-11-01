@@ -89,4 +89,34 @@ public class AppLifecycleCommonServiceTest {
 
         assertThat(result, is(nullValue()));
     }
+
+    /**
+     * Find by org guid test verify return.
+     */
+    @Test
+    public void findByOrgGuidTest_VerifyReturn() {
+
+        when(jpaServiceInstanceRepository.findDistinctFirstByOrganizationGuid(anyString())).thenReturn(jpaServiceInstance);
+
+        ServiceInstance result = appLifecycleCommonService.findByOrgGuid(TestConstants.ORG_GUID);
+
+        assertThat(result.getServiceDefinitionId(), is(jpaServiceInstance.getServiceId()));
+        assertThat(result.getPlanId(), is(jpaServiceInstance.getPlanId()));
+        assertThat(result.getOrganizationGuid(), is(jpaServiceInstance.getOrganizationGuid()));
+        assertThat(result.getSpaceGuid(), is(jpaServiceInstance.getSpaceGuid()));
+        assertThat(result.getServiceInstanceId(), is(jpaServiceInstance.getServiceInstanceId()));
+    }
+
+    /**
+     * Find by org guid test verify return is null.
+     */
+    @Test
+    public void findByOrgGuidTest_VerifyReturnIsNull() {
+
+        when(jpaServiceInstanceRepository.findDistinctFirstByOrganizationGuid(anyString())).thenReturn(null);
+
+        ServiceInstance result = appLifecycleCommonService.findByOrgGuid(TestConstants.ORG_GUID);
+
+        assertThat(result, is(nullValue()));
+    }
 }

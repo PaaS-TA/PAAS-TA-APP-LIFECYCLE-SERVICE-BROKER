@@ -70,21 +70,17 @@ public class AppLifecycleCommonService {
      * @return the service instance
      */
     public ServiceInstance findByOrgGuid(String orgGuid) {
-        JpaServiceInstance jpaServiceInstanceorg = jpaServiceInstanceRepository.findDistinctFirstByOrganizationGuid(orgGuid);
+        JpaServiceInstance jpaServiceInstance = jpaServiceInstanceRepository.findDistinctFirstByOrganizationGuid(orgGuid);
 
-        ServiceInstance serviceInstance = null;
-
-        if (jpaServiceInstanceorg != null) {
-            serviceInstance = new ServiceInstance(
-                    new CreateServiceInstanceRequest(
-                            jpaServiceInstanceorg.getServiceInstanceId(),
-                            jpaServiceInstanceorg.getPlanId(),
-                            jpaServiceInstanceorg.getOrganizationGuid(),
-                            jpaServiceInstanceorg.getSpaceGuid()
-                    ).withServiceInstanceId(jpaServiceInstanceorg.getServiceInstanceId()));
+        if (jpaServiceInstance != null) {
+            return new ServiceInstance(new CreateServiceInstanceRequest(
+                    jpaServiceInstance.getServiceId(),
+                    jpaServiceInstance.getPlanId(),
+                    jpaServiceInstance.getOrganizationGuid(),
+                    jpaServiceInstance.getSpaceGuid()
+            ).withServiceInstanceId(jpaServiceInstance.getServiceInstanceId()));
         }
-
-        return serviceInstance;
+        return null;
     }
 
     /**
