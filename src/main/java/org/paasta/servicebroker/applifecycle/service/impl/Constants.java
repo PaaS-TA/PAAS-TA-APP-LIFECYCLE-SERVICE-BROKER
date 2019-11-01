@@ -14,8 +14,8 @@ public class Constants {
     /** The constant JOB_STATE_RECREATE. */
     public static final String JOB_STATE_RECREATE = "recreate";
 
-    /** The constant PARAMETERS_KEY_PASSWORD. */
-    public static final String PARAMETERS_KEY_PASSWORD = "password";
+    /** The constant PARAMETERS_KEY. */
+    public static final String PARAMETERS_KEY = "password";
     /** The constant TAIGA_API_AUTH. */
     public static final String TAIGA_API_AUTH = "/api/v1/auth";
     /** The constant TAIGA_API_CHANGE_PW. */

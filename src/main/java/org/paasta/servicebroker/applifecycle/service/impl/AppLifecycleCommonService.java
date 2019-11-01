@@ -97,7 +97,7 @@ public class AppLifecycleCommonService {
     String serviceAssignment(CreateServiceInstanceRequest request) throws ServiceException {
 
         String serviceInstanceId = request.getServiceInstanceId();
-        String password = (String) request.getParameters().get(Constants.PARAMETERS_KEY_PASSWORD);
+        String password = (String) request.getParameters().get(Constants.PARAMETERS_KEY);
         JpaDedicatedVM jpaDedicatedVM = jpaDedicatedVMRepository.findDistinctFirstByAssignmentEquals(Constants.STATUS_WATING_FOR_ASSIGNMENT);
 
         if (jpaDedicatedVM != null) {
