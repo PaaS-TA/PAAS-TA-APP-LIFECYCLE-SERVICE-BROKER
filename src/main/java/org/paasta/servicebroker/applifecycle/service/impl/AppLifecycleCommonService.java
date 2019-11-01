@@ -136,7 +136,6 @@ public class AppLifecycleCommonService {
         jpaServiceInstanceRepository.save(jpaServiceInstance);
     }
 
-
     /**
      * Proc deprovisioning.
      *

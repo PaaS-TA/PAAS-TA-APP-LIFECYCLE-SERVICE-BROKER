@@ -5,11 +5,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.openpaas.paasta.bosh.director.BoshDirector;
 import org.openpaas.servicebroker.model.CreateServiceInstanceRequest;
 import org.openpaas.servicebroker.model.ServiceInstance;
+import org.paasta.servicebroker.applifecycle.exception.ServiceException;
+import org.paasta.servicebroker.applifecycle.model.JpaDedicatedVM;
 import org.paasta.servicebroker.applifecycle.model.JpaRepositoryFixture;
 import org.paasta.servicebroker.applifecycle.model.JpaServiceInstance;
 import org.paasta.servicebroker.applifecycle.model.RequestFixture;
+import org.paasta.servicebroker.applifecycle.repository.JpaDedicatedVMRepository;
 import org.paasta.servicebroker.applifecycle.repository.JpaServiceInstanceRepository;
 import org.paasta.servicebroker.applifecycle.service.impl.AppLifecycleCommonService;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -18,11 +22,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * The type App lifecycle common service test.
@@ -35,9 +41,15 @@ public class AppLifecycleCommonServiceTest {
 
     @Mock
     JpaServiceInstanceRepository jpaServiceInstanceRepository;
+    @Mock
+    JpaDedicatedVMRepository jpaDedicatedVMRepository;
+    @Mock
+    BoshDirector boshDirector;
 
     JpaServiceInstance jpaServiceInstance;
+    JpaDedicatedVM jpaDedicatedVM;
     CreateServiceInstanceRequest createServiceInstanceRequest;
+    ServiceInstance serviceInstance;
 
     /**
      * Sets up.
@@ -56,6 +68,8 @@ public class AppLifecycleCommonServiceTest {
         createServiceInstanceRequest.setParameters(vaildParam);
 
         jpaServiceInstance = JpaRepositoryFixture.getJpaServiceInstance();
+        jpaDedicatedVM = JpaRepositoryFixture.getJpaDedicatedVM();
+        serviceInstance = RequestFixture.getServiceInstance();
 
     }
 
@@ -119,4 +133,63 @@ public class AppLifecycleCommonServiceTest {
 
         assertThat(result, is(nullValue()));
     }
+
+    /**
+     * Create service instance test.
+     */
+    @Test
+    public void createServiceInstanceTest() {
+
+        appLifecycleCommonService.createServiceInstance(serviceInstance);
+
+        verify(jpaServiceInstanceRepository, times(1)).save(any(JpaServiceInstance.class));
+    }
+
+    /**
+     * Proc de provisioning test.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void procDeProvisioningTest() throws Exception {
+
+        doNothing().when(jpaServiceInstanceRepository).delete(anyString());
+        when(jpaDedicatedVMRepository.findDistinctFirstByProvisionedServiceInstanceId(anyString())).thenReturn(jpaDedicatedVM);
+        when(boshDirector.updateInstanceState(TestConstants.DEPLOYMENT_NAME, jpaDedicatedVM.getVmName(), jpaDedicatedVM.getVmId(), TestConstants.JOB_STATE_RECREATE)).thenReturn(true);
+
+        appLifecycleCommonService.procDeProvisioning(TestConstants.SV_INSTANCE_ID);
+    }
+
+    /**
+     * Proc de provisioning test verify recreate vm case 1.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void procDeProvisioningTest_VerifyRecreateVM_Case1() throws Exception {
+
+        doNothing().when(jpaServiceInstanceRepository).delete(anyString());
+        when(jpaDedicatedVMRepository.findDistinctFirstByProvisionedServiceInstanceId(anyString())).thenReturn(jpaDedicatedVM);
+        when(boshDirector.updateInstanceState(TestConstants.DEPLOYMENT_NAME, jpaDedicatedVM.getVmName(), jpaDedicatedVM.getVmId(), TestConstants.JOB_STATE_RECREATE)).thenReturn(false);
+
+        assertThatThrownBy(() -> appLifecycleCommonService.procDeProvisioning(TestConstants.SV_INSTANCE_ID))
+                .isInstanceOf(ServiceException.class).hasMessageContaining("Failed to recreate dedecated VM");
+    }
+
+    /**
+     * Proc de provisioning test verify recreate vm case 2.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void procDeProvisioningTest_VerifyRecreateVM_Case2() throws Exception {
+
+        doNothing().when(jpaServiceInstanceRepository).delete(anyString());
+        when(jpaDedicatedVMRepository.findDistinctFirstByProvisionedServiceInstanceId(anyString())).thenReturn(jpaDedicatedVM);
+        when(boshDirector.updateInstanceState(TestConstants.DEPLOYMENT_NAME, jpaDedicatedVM.getVmName(), jpaDedicatedVM.getVmId(), TestConstants.JOB_STATE_RECREATE)).thenThrow(Exception.class);
+
+        assertThatThrownBy(() -> appLifecycleCommonService.procDeProvisioning(TestConstants.SV_INSTANCE_ID))
+                .isInstanceOf(ServiceException.class).hasMessageContaining("Failed to recreate dedecated VM");
+    }
+
 }
