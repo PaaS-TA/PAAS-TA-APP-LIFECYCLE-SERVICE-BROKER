@@ -1,0 +1,81 @@
+buildscript {
+    ext {
+        gradleVersion = '4.9'
+        springBootVersion = '1.5.10.RELEASE'
+    }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+        maven { url "http://repo.spring.io/plugins-release" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+
+ext {
+    lombokVersion = '1.18.8'
+    jacocoVersion = '0.8.4'
+    gsonVersion = '2.8.6'
+}
+
+jar {
+    baseName = 'paasta-app-lifecycle-service-broker'
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    mavenCentral()
+    maven { url "http://repo.spring.io/plugins-release" }
+}
+
+dependencies {
+
+    compile files("libs/openpaas-service-java-broker.jar")
+    compile files("libs/PAAS-TA-BOSH-API.jar")
+
+    compile "org.springframework.boot:spring-boot-starter-data-jpa"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+
+    compile "org.apache.commons:commons-dbcp2"
+    runtime "mysql:mysql-connector-java"
+    compile "org.springframework:spring-jdbc:4.0.0.M3"
+    compile "org.apache.commons:commons-lang3:3.0"
+    compile "org.apache.httpcomponents:httpclient:4.5.10"
+    compile "com.google.code.gson:gson:${gsonVersion}"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "${gradleVersion}"
+}
+
+configurations.all {
+    exclude module: 'logback-classic'
+}
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "${jacocoVersion}"
+}
+
+test {
+    ignoreFailures = true
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/jacoco-overall.exec")
+    }
+}
