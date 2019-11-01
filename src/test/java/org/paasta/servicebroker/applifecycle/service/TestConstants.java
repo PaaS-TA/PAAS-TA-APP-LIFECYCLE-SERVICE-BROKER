@@ -44,4 +44,8 @@ public class TestConstants {
 
     public static final String PARAMETERS_KEY = "password";
     public static final String VAILD_PARAMETER_VALUE = "Test12";
+
+    public static final String DEPLOYMENT_NAME = "test_deployment_name";
+    public static final String SERVICE_ADMIN = "serviceadmin";
+    public static final String SERVICE_ADMIN_INIT_PASSWORD = "service_init_pw";
 }
