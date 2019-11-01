@@ -48,7 +48,7 @@ public class AppLifecycleCommonService {
      * @param serviceInstanceId the service instance id
      * @return the service instance
      */
-    ServiceInstance getServiceInstance(String serviceInstanceId) {
+    public ServiceInstance getServiceInstance(String serviceInstanceId) {
         JpaServiceInstance jpaServiceInstance = jpaServiceInstanceRepository.findOne(serviceInstanceId);
 
         if (jpaServiceInstance != null) {
@@ -69,7 +69,7 @@ public class AppLifecycleCommonService {
      * @param orgGuid the org guid
      * @return the service instance
      */
-    ServiceInstance findByOrgGuid(String orgGuid) {
+    public ServiceInstance findByOrgGuid(String orgGuid) {
         JpaServiceInstance jpaServiceInstanceorg = jpaServiceInstanceRepository.findDistinctFirstByOrganizationGuid(orgGuid);
 
         ServiceInstance serviceInstance = null;
@@ -94,7 +94,7 @@ public class AppLifecycleCommonService {
      * @return the string
      * @throws ServiceException the service exception
      */
-    String serviceAssignment(CreateServiceInstanceRequest request) throws ServiceException {
+    public String serviceAssignment(CreateServiceInstanceRequest request) throws ServiceException {
 
         String serviceInstanceId = request.getServiceInstanceId();
         String password = (String) request.getParameters().get(Constants.PARAMETERS_KEY);
@@ -127,7 +127,7 @@ public class AppLifecycleCommonService {
      *
      * @param serviceInstance the service instance
      */
-    void createServiceInstance(ServiceInstance serviceInstance) {
+    public void createServiceInstance(ServiceInstance serviceInstance) {
         JpaServiceInstance jpaServiceInstance = JpaServiceInstance.builder()
                 .serviceInstanceId(serviceInstance.getServiceInstanceId())
                 .serviceId(serviceInstance.getServiceDefinitionId())
@@ -147,7 +147,7 @@ public class AppLifecycleCommonService {
      * @param serviceInstanceId the service instance id
      * @throws ServiceException the service exception
      */
-    void procDeProvisioning(String serviceInstanceId) throws ServiceException {
+    public void procDeProvisioning(String serviceInstanceId) throws ServiceException {
 
         // Delete service instance data
         jpaServiceInstanceRepository.delete(serviceInstanceId);

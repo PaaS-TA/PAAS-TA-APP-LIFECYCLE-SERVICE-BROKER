@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Service
-class AppLifecycleServiceInstanceService implements ServiceInstanceService {
+public class AppLifecycleServiceInstanceService implements ServiceInstanceService {
 
     @Autowired
     private final AppLifecycleCommonService appLifecycleCommonService;
@@ -53,7 +53,7 @@ class AppLifecycleServiceInstanceService implements ServiceInstanceService {
         // 사용자 암호 :: 파라미터 입력값 유효성 체크
         Matcher matcher = patternPassword.matcher((String) request.getParameters().get(Constants.PARAMETERS_KEY));
         if (!matcher.matches()) {
-            throw new ServiceBrokerException("password does not meet the requirements. [use letters(mix uppercase and lowercase letters) and numbers(or special characters($@!%*#?&), use 6-30 characters.]");
+            throw new ServiceBrokerException("password does not meet the requirements. [use letters or numbers or special characters($@!%*#?&), use 6-30 characters.]");
         }
 
         // 서비스 인스턴스 Guid Check
@@ -67,7 +67,7 @@ class AppLifecycleServiceInstanceService implements ServiceInstanceService {
         // 조직 Guid Check (방침 : space 구분 없이 조직별 1개만 생성)
         ServiceInstance serviceInstanceOrg = appLifecycleCommonService.findByOrgGuid(request.getOrganizationGuid());
         if (serviceInstanceOrg != null) {
-            log.error("ServiceInstance already exists in your organization: OrgGuid : {}, spaceId : {}", request.getOrganizationGuid(), serviceInstance.getSpaceGuid());
+            log.error("ServiceInstance already exists in your organization: OrgGuid : {}, spaceId : {}", serviceInstanceOrg.getOrganizationGuid(), serviceInstanceOrg.getSpaceGuid());
             throw new ServiceBrokerException("ServiceInstance already exists in your organization.");
         }
 

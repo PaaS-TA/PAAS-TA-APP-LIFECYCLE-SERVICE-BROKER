@@ -41,4 +41,7 @@ public class TestConstants {
     public static final String DEDICATED_VM_ID = "test_dedicated_vm_id";
     public static final String DEDICATED_VM_IP = "test_dedicated_vm_ip";
     public static final int STATUS_WATING_FOR_ASSIGNMENT = 0;
+
+    public static final String PARAMETERS_KEY = "password";
+    public static final String VAILD_PARAMETER_VALUE = "Test12";
 }
