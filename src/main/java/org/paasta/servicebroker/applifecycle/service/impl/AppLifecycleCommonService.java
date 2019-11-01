@@ -161,7 +161,7 @@ public class AppLifecycleCommonService {
      * @return the jpa dedicated vm
      * @throws ServiceException the service exception
      */
-    JpaDedicatedVM deprovisionVM(String serviceInstanceId) throws ServiceException {
+    public JpaDedicatedVM deprovisionVM(String serviceInstanceId) throws ServiceException {
         JpaDedicatedVM jpaDedicatedVM = jpaDedicatedVMRepository.findDistinctFirstByProvisionedServiceInstanceId(serviceInstanceId);
 
         if (jpaDedicatedVM != null) {
