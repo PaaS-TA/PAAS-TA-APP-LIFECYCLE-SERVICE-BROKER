@@ -12,7 +12,7 @@ App Lifecycle 서비스 브로커가 수행하는 App Lifecycle 서비스 관리
 # 개발 환경
 
 - JDK 8
-- Gradle 4.9
+- Gradle 5.0
 - Spring Boot 1.5.10
 - CF Service Broker 2.4.0
 - Lombok 1.18.8
